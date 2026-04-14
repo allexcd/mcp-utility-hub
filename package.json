@@ -1,0 +1,18 @@
+{
+  "name": "mcp-utility-hub",
+  "version": "1.0.0",
+  "description": "MCP server for personal utilities like file generation",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "keywords": ["mcp", "lm-studio", "ollama", "file-generation"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "copilot-workflow-kit": "^1.0.1"
+  }
+}
