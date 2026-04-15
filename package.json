@@ -13,6 +13,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "copilot-workflow-kit": "^1.0.1"
+    "copilot-workflow-kit": "^1.1.0"
   }
 }
