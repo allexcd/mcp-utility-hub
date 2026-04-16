@@ -1,7 +1,7 @@
 {
   "name": "mcp-utility-hub",
   "version": "1.0.0",
-  "description": "MCP server for creating local files in managed user-visible folders",
+  "description": "MCP utility server with practical tools for LM Studio, Ollama, and other MCP-compatible environments",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -14,7 +14,7 @@
     "README.md"
   ],
   "engines": {
-    "node": ">=18.18"
+    "node": ">=20"
   },
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
@@ -43,7 +43,7 @@
   "bugs": {
     "url": "https://github.com/allexcd/mcp-utility-hub/issues"
   },
-  "license": "ISC",
+  "license": "MIT",
   "publishConfig": {
     "access": "public"
   },

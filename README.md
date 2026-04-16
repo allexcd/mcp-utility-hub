@@ -32,6 +32,8 @@ any other executable on your `PATH`.
 
 ## Installation
 
+Node.js 20 or later is required.
+
 ### Option A: via npm (recommended if published)
 
 No local setup required. LM Studio will download and run the package automatically
@@ -285,7 +287,7 @@ npm test        # rebuilds and runs tests
 npm run verify  # tests + dry-run npm package check
 ```
 
-GitHub Actions runs `npm run verify` on Node 18, 20, and 22 for every push and
+GitHub Actions runs `npm run verify` on Node 20 and 22 for every push and
 pull request.
 
 ## Release Workflow

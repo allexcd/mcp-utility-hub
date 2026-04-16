@@ -11,7 +11,7 @@ if (args.has("--help") || args.has("-h")) {
     [
       "mcp-utility-hub",
       "",
-      "Starts the MCP server on stdio for LM Studio, Claude Desktop, and other MCP clients.",
+      "Starts the MCP server on stdio for LM Studio, Ollama, and other MCP clients.",
       "",
       "Usage:",
       "  mcp-utility-hub",
