@@ -58,12 +58,16 @@ while read -r local_ref local_sha remote_ref remote_sha; do
   fi
 
   if [[ "$remote_sha" == "0000000000000000000000000000000000000000" ]]; then
-    mapfile -t commits < <(git rev-list "$local_sha" --not --remotes)
+    commits="$(git rev-list "$local_sha" --not --remotes || true)"
   else
-    mapfile -t commits < <(git rev-list "$remote_sha..$local_sha")
+    commits="$(git rev-list "$remote_sha..$local_sha" || true)"
   fi
 
-  for sha in "${commits[@]:-}"; do
+  while IFS= read -r sha; do
+    if [[ -z "${sha:-}" ]]; then
+      continue
+    fi
+
     validate_commit_subject "$sha" || {
       echo ""
       echo "Push rejected due to commit naming convention."
@@ -71,7 +75,7 @@ while read -r local_ref local_sha remote_ref remote_sha; do
       echo ""
       exit 1
     }
-  done
+  done <<< "$commits"
 done
 
 exit 0
