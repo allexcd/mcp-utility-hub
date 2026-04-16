@@ -1,42 +1,103 @@
-import { basename, resolve } from "path";
-import { EXPORT_DIR } from "./config.js";
+import { resolve } from "path";
+import { pathToFileURL } from "url";
+import {
+  DEFAULT_DESTINATION,
+  DESTINATION_NAMES,
+  MANAGED_DESTINATIONS,
+} from "./config.js";
+
+function sanitizePathSegment(segment: string): string {
+  let safe = segment.replace(/[^\w.\-]/g, "_");
+
+  if (safe.startsWith(".")) {
+    safe = "_" + safe.slice(1);
+  }
+
+  if (!safe || safe === "." || safe === "..") {
+    throw new Error("Invalid path segment");
+  }
+
+  return safe;
+}
+
+export function normalizeDestinationName(destination?: string): string {
+  const normalized = destination?.trim().toLowerCase() || DEFAULT_DESTINATION;
+  if (!MANAGED_DESTINATIONS[normalized]) {
+    throw new Error(
+      `Unknown destination: ${destination}. Available destinations: ${DESTINATION_NAMES.join(", ")}`
+    );
+  }
+
+  return normalized;
+}
 
 /**
  * Sanitize a user-provided filename to prevent path traversal and unsafe characters.
  * Returns the sanitized filename or throws if the result is empty.
  */
 export function sanitizeFilename(filename: string): string {
-  // Extract just the filename component (strips any directory parts)
-  let safe = basename(filename);
+  const segments = filename.split(/[\\/]+/).filter(Boolean);
+  const finalSegment = segments.at(-1) ?? filename;
+  return sanitizePathSegment(finalSegment);
+}
 
-  // Replace any characters that aren't alphanumeric, dots, hyphens, or underscores
-  safe = safe.replace(/[^\w.\-]/g, "_");
+export function sanitizeRelativePath(relativePath: string): string {
+  const segments = relativePath.split(/[\\/]+/).filter(Boolean);
+  const safeSegments: string[] = [];
 
-  // Reject hidden files (starting with dot)
-  if (safe.startsWith(".")) {
-    safe = "_" + safe.slice(1);
+  for (const segment of segments) {
+    if (segment === ".") {
+      continue;
+    }
+    if (segment === "..") {
+      throw new Error("Invalid relative path");
+    }
+    safeSegments.push(sanitizePathSegment(segment));
   }
 
-  // Reject empty result
-  if (!safe || safe === "." || safe === "..") {
-    throw new Error("Invalid filename");
+  if (safeSegments.length === 0) {
+    throw new Error("Invalid relative path");
   }
 
-  return safe;
+  return safeSegments.join("/");
+}
+
+export function buildRelativePath(filename: string, subdirectory?: string): string {
+  const safeFilename = sanitizeFilename(filename);
+  if (!subdirectory?.trim()) {
+    return safeFilename;
+  }
+
+  return `${sanitizeRelativePath(subdirectory)}/${safeFilename}`;
 }
 
 /**
- * Resolve a filename within the export directory and verify it doesn't escape.
+ * Resolve a path within a managed destination and verify it doesn't escape.
  * Returns the absolute path or throws if path traversal is detected.
  */
-export function resolveExportPath(filename: string): string {
-  const safeName = sanitizeFilename(filename);
-  const resolved = resolve(EXPORT_DIR, safeName);
-  const exportRoot = resolve(EXPORT_DIR);
+export function resolveManagedPath(destination: string | undefined, relativePath: string): {
+  destination: string;
+  root: string;
+  safeRelativePath: string;
+  absolutePath: string;
+} {
+  const normalizedDestination = normalizeDestinationName(destination);
+  const safeRelativePath = sanitizeRelativePath(relativePath);
+  const root = resolve(MANAGED_DESTINATIONS[normalizedDestination]);
+  const absolutePath = resolve(root, safeRelativePath);
 
-  if (!resolved.startsWith(exportRoot + "/") && resolved !== exportRoot) {
+  if (!absolutePath.startsWith(root + "/")) {
     throw new Error("Path traversal detected");
   }
 
-  return resolved;
+  return {
+    destination: normalizedDestination,
+    root,
+    safeRelativePath,
+    absolutePath,
+  };
+}
+
+export function toFileUri(absolutePath: string): string {
+  return pathToFileURL(absolutePath).href;
 }
