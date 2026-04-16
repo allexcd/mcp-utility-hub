@@ -1,18 +1,58 @@
 {
   "name": "mcp-utility-hub",
   "version": "1.0.0",
-  "description": "MCP server for personal utilities like file generation",
+  "description": "MCP server for creating local files in managed user-visible folders",
   "type": "module",
   "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsx src/index.ts"
+  "bin": {
+    "mcp-utility-hub": "./bin/mcp-utility-hub.js"
   },
-  "keywords": ["mcp", "lm-studio", "ollama", "file-generation"],
-  "author": "",
+  "files": [
+    "bin",
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.18"
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "npm run build && node --test tests/mcp-utility-hub.test.mjs",
+    "pack:dry": "npm pack --dry-run",
+    "verify": "npm test && npm run pack:dry",
+    "prepack": "npm run build",
+    "release": "node scripts/release.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "lm-studio",
+    "ollama",
+    "file-generation",
+    "local-files"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allexcd/mcp-utility-hub.git"
+  },
+  "homepage": "https://github.com/allexcd/mcp-utility-hub#readme",
+  "bugs": {
+    "url": "https://github.com/allexcd/mcp-utility-hub/issues"
+  },
   "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
+  },
   "devDependencies": {
-    "copilot-workflow-kit": "^1.1.0"
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
   }
 }
