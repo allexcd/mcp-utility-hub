@@ -304,6 +304,28 @@ git push && git push --tags
 npm publish
 ```
 
+## GitHub Automation
+
+The repository includes:
+
+- `CI` for pull requests to `main`
+- `PR Title Check` for semantic pull request titles
+- `Publish to npm` when a GitHub release is published
+- `Apply Branch Ruleset` for main-branch protections
+- `Dependabot` for npm and GitHub Actions updates
+
+### Contributor workflow
+
+Contributors should work through branches and pull requests:
+
+1. Create a branch from `main`
+2. Open a pull request
+3. Make sure CI passes
+4. Get at least 1 approval
+5. Merge into `main`
+
+Main branch protections are configured so changes go through PR review and required checks.
+
 ## Notes for Host Apps
 
 - Files are created on the user's real filesystem, not in localhost storage.
